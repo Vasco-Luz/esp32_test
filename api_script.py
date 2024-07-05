@@ -4,9 +4,6 @@ from tkinter import ttk, messagebox
 import serial
 import serial.tools.list_ports
 
-
-
-
 class ThinkerApp:
     def __init__(self, root):
         self.root = root
@@ -14,7 +11,6 @@ class ThinkerApp:
 
         self.create_widgets()
         self.populate_serial_ports()
-
 
     def create_widgets(self):
         self.port_label = tk.Label(self.root, text="Select COM Port:")
@@ -46,7 +42,7 @@ class ThinkerApp:
 
     def list_serial_ports(self):
         return [port.device for port in serial.tools.list_ports.comports()]
-    
+
     def send_command(self):
         port = self.port_combobox.get()
         command = self.command_entry.get()
@@ -64,18 +60,13 @@ class ThinkerApp:
 
     def send_command_to_esp32(self, port, command):
         try:
-            ser = serial.Serial(port, 115200, timeout=1)
+            ser = serial.Serial(port, 115200, timeout=1, rtscts=False)
             ser.write(command.encode())
-            response = ser.read(100).decode()  # Read up to 100 bytes
+            response = ser.read(1000).decode()  # Read up to 100 bytes
             ser.close()
             return response
         except serial.SerialException as e:
             return f"Error communicating with the ESP32: {e}"
-
-
-
-
-
 
 if __name__ == "__main__":
     root = tk.Tk()
